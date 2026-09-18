@@ -125,13 +125,13 @@ ipcMain.handle('save-image', (_e, dataUrl) => {
 });
 
 // Sayfanın görünen kısmını PNG olarak kaydet
-ipcMain.handle('export-png', async (_e, rect, suggested) => {
+ipcMain.handle('export-png', async (_e, rect, suggested, title) => {
   const img = await win.webContents.capturePage({
     x: Math.round(rect.x), y: Math.round(rect.y),
     width: Math.round(rect.width), height: Math.round(rect.height),
   });
   const { canceled, filePath } = await dialog.showSaveDialog(win, {
-    title: 'PNG olarak dışa aktar',
+    title: title || 'Export as PNG',
     defaultPath: path.join(app.getPath('pictures'), `${suggested || 'pocket'}.png`),
     filters: [{ name: 'PNG', extensions: ['png'] }],
   });

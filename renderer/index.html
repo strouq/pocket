@@ -9,7 +9,7 @@
 <body data-state="folded" data-tool="select">
 
   <!-- Katlı köşe: görünmez, 1 sn basılı tut -->
-  <div id="corner" title="1 saniye basılı tut ve çek">
+  <div id="corner" data-i18n-title="corner">
     <span class="pip"></span>
     <svg class="ring" viewBox="0 0 24 24" aria-hidden="true">
       <circle class="ring-track" cx="12" cy="12" r="8" />
@@ -20,35 +20,41 @@
   <!-- Cep -->
   <div id="pocket">
     <header class="bar">
-      <div class="brand"><span class="dot"></span>Pocket</div>
+      <div class="brand-wrap">
+        <button class="brand" id="brand" title="Language / Dil"><span class="dot"></span><span class="brand-text">Pocket</span><span class="caret"></span></button>
+        <div class="popover menu" id="lang-pop">
+          <button data-lang="tr">Türkçe</button>
+          <button data-lang="en">English</button>
+        </div>
+      </div>
 
       <div class="tools">
-        <button class="tool active" data-tool="select" title="Seç / Taşı (V)">
+        <button class="tool active" data-tool="select" data-i18n-title="tool.select">
           <svg viewBox="0 0 20 20"><path d="M5 3l11 8-5 1-2 5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
-        <button class="tool" data-tool="text" title="Yazı (T) — boş yere tıkla">
+        <button class="tool" data-tool="text" data-i18n-title="tool.text">
           <svg viewBox="0 0 20 20"><path d="M4 4h12v3M10 4v12M7 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
-        <button class="tool" data-tool="check" title="Checklist (C) — boş yere tıkla">
+        <button class="tool" data-tool="check" data-i18n-title="tool.check">
           <svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 10l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <span class="sep"></span>
-        <button class="tool" data-tool="pen" title="Kalem (P)">
+        <button class="tool" data-tool="pen" data-i18n-title="tool.pen">
           <svg viewBox="0 0 20 20"><path d="M4 16l1-4L14 3l3 3-9 9-4 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
         </button>
-        <button class="tool" data-tool="eraser" title="Silgi (E) — çizgiyi/şekli siler">
+        <button class="tool" data-tool="eraser" data-i18n-title="tool.eraser">
           <svg viewBox="0 0 20 20"><path d="M3 13l7-7 5 5-5 5H7zM6 13l4 4M4 17h13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
         </button>
         <div class="shape-wrap">
-          <button class="tool" id="shape-btn" title="Şekiller">
+          <button class="tool" id="shape-btn" data-i18n-title="tool.shapes">
             <svg viewBox="0 0 20 20" data-shape-icon="line"><path d="M4 16L16 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             <span class="caret"></span>
           </button>
           <div class="popover" id="shape-pop">
-            <button data-tool="line" title="Çizgi (L)"><svg viewBox="0 0 20 20"><path d="M4 16L16 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-            <button data-tool="arrow" title="Ok (A)"><svg viewBox="0 0 20 20"><path d="M4 16L16 4M9 4h7v7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <button data-tool="rect" title="Dikdörtgen (R)"><svg viewBox="0 0 20 20"><rect x="3.5" y="4.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
-            <button data-tool="ellipse" title="Elips (O)"><svg viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="7" ry="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            <button data-tool="line" data-i18n-title="tool.line"><svg viewBox="0 0 20 20"><path d="M4 16L16 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+            <button data-tool="arrow" data-i18n-title="tool.arrow"><svg viewBox="0 0 20 20"><path d="M4 16L16 4M9 4h7v7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button data-tool="rect" data-i18n-title="tool.rect"><svg viewBox="0 0 20 20"><rect x="3.5" y="4.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            <button data-tool="ellipse" data-i18n-title="tool.ellipse"><svg viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="7" ry="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
           </div>
         </div>
         <span class="sep"></span>
@@ -60,16 +66,16 @@
           <button class="swatch" data-color="#5ee2a0" style="--c:#5ee2a0"></button>
         </div>
         <span class="sep"></span>
-        <button class="tool" id="export" title="Sayfayı PNG olarak dışa aktar">
+        <button class="tool" id="export" data-i18n-title="export">
           <svg viewBox="0 0 20 20"><path d="M10 3v10M6 9l4 4 4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
 
       <div class="win">
-        <button id="fold" title="Köşeye katla (Esc)">
+        <button id="fold" data-i18n-title="fold">
           <svg viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
-        <button id="quit" title="Kapat">
+        <button id="quit" data-i18n-title="quit">
           <svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         </button>
       </div>
@@ -78,16 +84,16 @@
     <div class="paper" id="paper">
       <div id="blocks"></div>
       <canvas id="ink"></canvas>
-      <div class="hint" id="hint">Yazı için çift tıkla · Ctrl+V ile görsel yapıştır</div>
+      <div class="hint" id="hint" data-i18n="hint"></div>
     </div>
 
     <footer class="pages">
       <div id="page-tabs"></div>
-      <button id="page-add" title="Yeni sayfa">+</button>
-      <span class="saved" id="saved">kaydedildi</span>
+      <button id="page-add" data-i18n-title="page.add">+</button>
+      <span class="saved" id="saved" data-i18n="saved"></span>
     </footer>
 
-    <div id="grip" title="Boyutu değiştir"></div>
+    <div id="grip" data-i18n-title="grip"></div>
     <div id="size-badge"></div>
   </div>
 

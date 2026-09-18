@@ -24,6 +24,53 @@ let color = '#e8ebf5';
 let selectedId = null;
 let lastPointer = { x: 40, y: 40 }; // yapıştırılan görselin düşeceği yer
 
+// ==================================================================
+// Dil
+// ==================================================================
+const I18N = {
+  tr: {
+    corner: '1 saniye basılı tut ve çek', 'tool.select': 'Seç / Taşı (V)', 'tool.text': 'Yazı (T) — boş yere tıkla',
+    'tool.check': 'Checklist (C) — boş yere tıkla', 'tool.pen': 'Kalem (P)', 'tool.eraser': 'Silgi (E) — çizgiyi/şekli siler',
+    'tool.shapes': 'Şekiller', 'tool.line': 'Çizgi (L)', 'tool.arrow': 'Ok (A)', 'tool.rect': 'Dikdörtgen (R)', 'tool.ellipse': 'Elips (O)',
+    export: 'Sayfayı PNG olarak dışa aktar', fold: 'Köşeye katla (Esc)', quit: 'Kapat', 'page.add': 'Yeni sayfa', grip: 'Boyutu değiştir',
+    hint: 'Yazı için çift tıkla · Ctrl+V ile görsel yapıştır', saved: 'kaydedildi', 'page.delete': 'Sayfayı sil', 'page.confirm': 'Sil?',
+    'ph.text': 'Yaz…', 'ph.check': 'Yapılacak…', delete: 'Sil', 'export.name': 'pocket-sayfa', 'export.title': 'PNG olarak dışa aktar',
+  },
+  en: {
+    corner: 'Hold 1 second and pull', 'tool.select': 'Select / Move (V)', 'tool.text': 'Text (T) — click empty space',
+    'tool.check': 'Checklist (C) — click empty space', 'tool.pen': 'Pen (P)', 'tool.eraser': 'Eraser (E) — removes a stroke/shape',
+    'tool.shapes': 'Shapes', 'tool.line': 'Line (L)', 'tool.arrow': 'Arrow (A)', 'tool.rect': 'Rectangle (R)', 'tool.ellipse': 'Ellipse (O)',
+    export: 'Export page as PNG', fold: 'Fold to corner (Esc)', quit: 'Quit', 'page.add': 'New page', grip: 'Resize',
+    hint: 'Double-click to write · Ctrl+V to paste an image', saved: 'saved', 'page.delete': 'Delete page', 'page.confirm': 'Delete?',
+    'ph.text': 'Write…', 'ph.check': 'To do…', delete: 'Delete', 'export.name': 'pocket-page', 'export.title': 'Export as PNG',
+  },
+};
+let lang = 'tr';
+const t = (k) => I18N[lang][k] ?? I18N.tr[k] ?? k;
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll('.block.text .editable').forEach(el => { el.dataset.placeholder = t('ph.text'); });
+  document.querySelectorAll('.ct').forEach(el => { el.dataset.placeholder = t('ph.check'); });
+  document.querySelectorAll('.del').forEach(el => { el.title = t('delete'); });
+  langPop.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  if (doc) renderTabs();
+}
+const langPop = document.getElementById('lang-pop');
+const brandBtn = document.getElementById('brand');
+brandBtn.addEventListener('click', () => {
+  const open = langPop.classList.toggle('open');
+  brandBtn.classList.toggle('open', open);
+});
+langPop.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  lang = b.dataset.lang;
+  doc.lang = lang;
+  langPop.classList.remove('open'); brandBtn.classList.remove('open');
+  applyLang();
+  scheduleSave();
+}));
+
 const uid = () => Math.random().toString(36).slice(2, 10);
 const page = () => doc.pages[doc.current];
 const items = () => page().items;
@@ -132,6 +179,7 @@ shapeBtn.addEventListener('click', () => {
 });
 document.addEventListener('mousedown', (e) => {
   if (!e.target.closest('.shape-wrap')) shapePop.classList.remove('open');
+  if (!e.target.closest('.brand-wrap')) { langPop.classList.remove('open'); brandBtn.classList.remove('open'); }
 });
 
 document.querySelectorAll('.swatch').forEach(b => b.addEventListener('click', () => {
@@ -229,7 +277,7 @@ function buildBlock(it) {
     ed.className = 'editable body';
     ed.contentEditable = 'true';
     ed.spellcheck = false;
-    ed.dataset.placeholder = 'Yaz…';
+    ed.dataset.placeholder = t('ph.text');
     ed.innerHTML = it.html || '';
     ed.addEventListener('input', () => { it.html = ed.innerHTML; scheduleSave(); });
     ed.addEventListener('paste', plainPaste);
@@ -255,7 +303,7 @@ function buildBlock(it) {
 
   const del = document.createElement('button');
   del.className = 'del';
-  del.title = 'Sil';
+  del.title = t('delete');
   del.textContent = '×';
   del.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); });
   del.addEventListener('click', () => removeItem(it.id));
@@ -275,7 +323,7 @@ function buildCheckItem(block, ci) {
   ct.className = 'editable ct';
   ct.contentEditable = 'true';
   ct.spellcheck = false;
-  ct.dataset.placeholder = 'Yapılacak…';
+  ct.dataset.placeholder = t('ph.check');
   ct.textContent = ci.text || '';
   ct.addEventListener('input', () => { ci.text = ct.textContent; scheduleSave(); });
   ct.addEventListener('keydown', (e) => {
@@ -728,21 +776,21 @@ canvas.addEventListener('pointercancel', endInk);
 function renderTabs() {
   tabsEl.innerHTML = '';
   doc.pages.forEach((p, i) => {
-    const t = document.createElement('button');
-    t.className = 'tab' + (i === doc.current ? ' active' : '');
-    t.innerHTML = `<span>${i + 1}</span><span class="x" title="Sayfayı sil">×</span>`;
-    t.addEventListener('click', (e) => {
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (i === doc.current ? ' active' : '');
+    tab.innerHTML = `<span>${i + 1}</span><span class="x" title="${t('page.delete')}">×</span>`;
+    tab.addEventListener('click', (e) => {
       if (e.target.classList.contains('x')) {
-        if (t.classList.contains('confirm')) deletePage(i);
+        if (tab.classList.contains('confirm')) deletePage(i);
         else {
-          t.classList.add('confirm'); t.querySelector('span').textContent = 'Sil?';
-          setTimeout(() => { t.classList.remove('confirm'); t.querySelector('span').textContent = i + 1; }, 2500);
+          tab.classList.add('confirm'); tab.querySelector('span').textContent = t('page.confirm');
+          setTimeout(() => { tab.classList.remove('confirm'); tab.querySelector('span').textContent = i + 1; }, 2500);
         }
         return;
       }
       if (i !== doc.current) { doc.current = i; renderPage(); scheduleSave(); }
     });
-    tabsEl.appendChild(t);
+    tabsEl.appendChild(tab);
   });
   tabsEl.querySelector('.tab.active')?.scrollIntoView({ inline: 'nearest' });
 }
@@ -770,7 +818,7 @@ document.getElementById('export').addEventListener('click', async () => {
   hint.classList.add('hidden');
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   const r = paper.getBoundingClientRect();
-  await window.api.exportPng({ x: r.left, y: r.top, width: r.width, height: r.height }, `pocket-sayfa-${doc.current + 1}`);
+  await window.api.exportPng({ x: r.left, y: r.top, width: r.width, height: r.height }, `${t('export.name')}-${doc.current + 1}`, t('export.title'));
   updateHint();
   select(prev);
 });
@@ -790,5 +838,7 @@ function scheduleSave() {
 
 (async () => {
   doc = await window.api.load();
+  lang = doc.lang === 'en' ? 'en' : 'tr';
+  applyLang();
   renderPage();
 })();
