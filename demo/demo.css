@@ -1,0 +1,109 @@
+/* Demo sahnesi: sahte masaüstü + uygulama penceresi + sahte imleç */
+body:not(.show-cursor), body:not(.show-cursor) * { cursor: none !important; }
+
+#desktop {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(1200px 700px at 78% 22%, rgba(124 140 255 / .35), transparent 60%),
+    radial-gradient(900px 600px at 15% 85%, rgba(94 226 160 / .18), transparent 60%),
+    radial-gradient(700px 500px at 60% 90%, rgba(255 107 139 / .16), transparent 60%),
+    linear-gradient(160deg, #0f1220 0%, #171b2e 50%, #0c0e19 100%);
+}
+#desktop .icons {
+  position: absolute; top: 28px; left: 28px;
+  display: grid; gap: 22px; width: 84px;
+  font: 11.5px "Inter", "Segoe UI", system-ui, sans-serif; color: #e6e8f2;
+  text-align: center; text-shadow: 0 1px 3px rgba(0 0 0 / .7);
+}
+#desktop .icons div::before {
+  content: ""; display: block; width: 44px; height: 44px; margin: 0 auto 6px;
+  border-radius: 10px; background: var(--ic, #4a5bd8);
+  box-shadow: inset 0 0 0 1px rgba(255 255 255 / .2), 0 4px 10px rgba(0 0 0 / .4);
+}
+#taskbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 44px;
+  background: rgba(10 12 22 / .72);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255 255 255 / .06);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+#taskbar span {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(255 255 255 / .1);
+}
+#taskbar span.start { background: linear-gradient(135deg, #6f7fff, #a5b0ff); }
+#taskbar .clock {
+  position: absolute; right: 16px;
+  font: 12px "Inter", "Segoe UI", system-ui, sans-serif; color: #dfe3f0;
+}
+
+/* Uygulama "penceresi": transform sayesinde içindeki position:fixed öğeler buna göre konumlanır */
+#win {
+  position: absolute; top: 0; left: 0;
+  width: 10px; height: 10px;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+/* Sahte imleç */
+#cursor {
+  position: fixed; left: 0; top: 0;
+  width: 22px; height: 30px;
+  pointer-events: none; z-index: 1000;
+  filter: drop-shadow(0 2px 3px rgba(0 0 0 / .6));
+  transition: transform .08s;
+}
+#cursor.down { transform: scale(.88); }
+#cursor .ripple {
+  position: absolute; left: -12px; top: -12px;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid #7c8cff; opacity: 0;
+}
+#cursor.click .ripple { animation: ripple .45s ease-out; }
+@keyframes ripple { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(1.6); } }
+
+/* Tuş ipucu (Ctrl+V) */
+#keys {
+  position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%) translateY(20px);
+  display: flex; gap: 8px; align-items: center;
+  opacity: 0; transition: opacity .25s, transform .25s;
+  z-index: 900; pointer-events: none;
+}
+#keys.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#keys kbd {
+  font: 600 14px "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #1a1d26; background: #f4f5fa;
+  padding: 8px 14px; border-radius: 8px;
+  box-shadow: 0 3px 0 #b9bdd0, 0 6px 14px rgba(0 0 0 / .4);
+}
+#keys .plus { color: #fff; font: 600 14px system-ui; }
+
+/* Kaydedildi bildirimi */
+#toast {
+  position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%) translateY(20px);
+  padding: 10px 16px; border-radius: 10px;
+  background: rgba(20 22 32 / .95); color: #e8ebf5;
+  font: 13px "Inter", "Segoe UI", system-ui, sans-serif;
+  border: 1px solid rgba(255 255 255 / .1);
+  box-shadow: 0 10px 30px rgba(0 0 0 / .5);
+  opacity: 0; transition: opacity .25s, transform .25s;
+  z-index: 900; pointer-events: none;
+  display: flex; align-items: center; gap: 10px;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast .ok { width: 18px; height: 18px; border-radius: 50%; background: #5ee2a0; display: grid; place-items: center; color: #0c0e19; font-size: 12px; font-weight: 700; }
+
+/* Kapanış kartı */
+#end {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  background: rgba(8 10 18 / .85);
+  opacity: 0; pointer-events: none; transition: opacity .5s;
+  z-index: 950;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif; color: #fff; text-align: center;
+}
+#end.show { opacity: 1; }
+#end h1 { font-size: 44px; letter-spacing: .06em; margin-bottom: 10px; }
+#end p { color: #aab0c8; font-size: 16px; }
+
+/* Demoda gerçek imleç görünmesin, dolgu noktası belirgin olsun */
+#win .pip { background: #cfd6ff; }

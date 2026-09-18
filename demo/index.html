@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>Pocket — demo</title>
+  <link rel="stylesheet" href="../renderer/style.css" />
+  <link rel="stylesheet" href="demo.css" />
+</head>
+<body data-state="folded" data-tool="select">
+  <div id="desktop">
+    <div class="icons">
+      <div style="--ic:#3b82f6">Documents</div>
+      <div style="--ic:#f59e0b">Photos</div>
+      <div style="--ic:#10b981">Music</div>
+    </div>
+    <div id="taskbar"><span class="start"></span><span></span><span></span><span></span><span class="clock">14:32</span></div>
+  </div>
+
+  <div id="win">
+<!-- Katlı köşe: görünmez, 0.5 sn basılı tut -->
+  <div id="corner" data-i18n-title="corner">
+    <span class="pip"></span>
+  </div>
+
+  <!-- Tema efekt katmanı (Venom: cebin dışına taşan sıvı) -->
+  <div id="fx">
+    <div class="goo"><div class="base"></div></div>
+    <div class="sheen"></div>
+  </div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo" />
+      <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+    </filter>
+  </svg>
+
+  <!-- Cep -->
+  <div id="pocket">
+    <header class="bar">
+      <div class="brand-wrap">
+        <button class="brand" id="brand" title="Language / Dil"><span class="dot"></span><span class="brand-text">Pocket</span><span class="caret"></span></button>
+        <div class="popover menu" id="lang-pop">
+          <div class="menu-title" data-i18n="menu.lang"></div>
+          <button data-lang="tr">Türkçe</button>
+          <button data-lang="en">English</button>
+          <div class="menu-title" data-i18n="menu.theme"></div>
+          <button data-theme="modern">Modern</button>
+          <button data-theme="venom">Venom</button>
+          <button data-theme="light" data-i18n="theme.light"></button>
+          <button data-theme="paper" data-i18n="theme.paper"></button>
+          <button data-theme="neon">Neon</button>
+        </div>
+      </div>
+
+      <div class="tools">
+        <button class="tool active" data-tool="select" data-i18n-title="tool.select">
+          <svg viewBox="0 0 20 20"><path d="M5 3l11 8-5 1-2 5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="text" data-i18n-title="tool.text">
+          <svg viewBox="0 0 20 20"><path d="M4 4h12v3M10 4v12M7 16h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="tool" data-tool="check" data-i18n-title="tool.check">
+          <svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 10l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="sep"></span>
+        <button class="tool" data-tool="pen" data-i18n-title="tool.pen">
+          <svg viewBox="0 0 20 20"><path d="M4 16l1-4L14 3l3 3-9 9-4 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="eraser" data-i18n-title="tool.eraser">
+          <svg viewBox="0 0 20 20"><path d="M3 13l7-7 5 5-5 5H7zM6 13l4 4M4 17h13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        </button>
+        <div class="shape-wrap">
+          <button class="tool" id="shape-btn" data-i18n-title="tool.shapes">
+            <svg viewBox="0 0 20 20" data-shape-icon="line"><path d="M4 16L16 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span class="caret"></span>
+          </button>
+          <div class="popover" id="shape-pop">
+            <button data-tool="line" data-i18n-title="tool.line"><svg viewBox="0 0 20 20"><path d="M4 16L16 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+            <button data-tool="arrow" data-i18n-title="tool.arrow"><svg viewBox="0 0 20 20"><path d="M4 16L16 4M9 4h7v7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button data-tool="rect" data-i18n-title="tool.rect"><svg viewBox="0 0 20 20"><rect x="3.5" y="4.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+            <button data-tool="ellipse" data-i18n-title="tool.ellipse"><svg viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="7" ry="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+          </div>
+        </div>
+        <span class="sep"></span>
+        <div class="colors">
+          <button class="swatch active" data-color="ink" style="--c:var(--text)"></button>
+          <button class="swatch" data-color="#7c8cff" style="--c:#7c8cff"></button>
+          <button class="swatch" data-color="#ff6b8b" style="--c:#ff6b8b"></button>
+          <button class="swatch" data-color="#ffd166" style="--c:#ffd166"></button>
+          <button class="swatch" data-color="#5ee2a0" style="--c:#5ee2a0"></button>
+        </div>
+        <span class="sep"></span>
+        <button class="tool" id="export" data-i18n-title="export">
+          <svg viewBox="0 0 20 20"><path d="M10 3v10M6 9l4 4 4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="win">
+        <button id="fold" data-i18n-title="fold">
+          <svg viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <button id="quit" data-i18n-title="quit">
+          <svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="paper" id="paper">
+      <div id="blocks">
+        <div id="fmt">
+          <button data-cmd="bold" data-i18n-title="fmt.bold"><b>B</b></button>
+          <button data-cmd="italic" data-i18n-title="fmt.italic"><i>I</i></button>
+          <button data-cmd="underline" data-i18n-title="fmt.underline"><u>U</u></button>
+          <span class="sep"></span>
+          <button data-size="-1" data-i18n-title="fmt.smaller">A−</button>
+          <button data-size="1" data-i18n-title="fmt.bigger">A+</button>
+        </div>
+      </div>
+      <canvas id="ink"></canvas>
+      <div class="hint" id="hint" data-i18n="hint"></div>
+    </div>
+
+    <footer class="pages">
+      <div id="page-tabs"></div>
+      <button id="page-add" data-i18n-title="page.add">+</button>
+      <span class="saved" id="saved" data-i18n="saved"></span>
+    </footer>
+
+    <div id="grip" data-i18n-title="grip"></div>
+    <div id="size-badge"></div>
+  </div>
+  </div>
+
+  <div id="cursor">
+    <svg width="22" height="30" viewBox="0 0 22 30"><path d="M2 2 L2 24 L8 18.5 L12 28 L16 26.3 L12 17 L20 17 Z" fill="#fff" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <span class="ripple"></span>
+  </div>
+  <div id="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>V</kbd></div>
+  <div id="toast"><span class="ok">✓</span><span id="toast-text"></span></div>
+  <div id="end"><div><h1>POCKET</h1><p id="end-text"></p><p style="margin-top:14px;color:#7c8cff">github.com/strouq/pocket</p></div></div>
+
+  <script src="api-shim.js"></script>
+  <script src="../renderer/app.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>
