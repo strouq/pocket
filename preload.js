@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('api', {
   save: (doc) => ipcRenderer.send('save', doc),
   saveImage: (dataUrl) => ipcRenderer.invoke('save-image', dataUrl),
   exportPng: (rect, name, title) => ipcRenderer.invoke('export-png', rect, name, title),
+  setMargin: (m) => ipcRenderer.send('set-margin', m),
   onState: (cb) => ipcRenderer.on('state', (_e, s) => cb(s)),
 });

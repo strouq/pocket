@@ -20,7 +20,7 @@ const shapeBtn = document.getElementById('shape-btn');
 let doc = null;            // { v, pages:[{id,name,items}], current, size }
 let tool = 'select';
 let lastShape = 'line';
-let color = '#e8ebf5';
+let color = 'ink';
 let selectedId = null;
 let lastPointer = { x: 40, y: 40 }; // yapıştırılan görselin düşeceği yer
 
@@ -35,6 +35,7 @@ const I18N = {
     export: 'Sayfayı PNG olarak dışa aktar', fold: 'Köşeye katla (Esc)', quit: 'Kapat', 'page.add': 'Yeni sayfa', grip: 'Boyutu değiştir',
     hint: 'Yazı için çift tıkla · Ctrl+V ile görsel yapıştır', saved: 'kaydedildi', 'page.delete': 'Sayfayı sil', 'page.confirm': 'Sil?',
     'ph.text': 'Yaz…', 'ph.check': 'Yapılacak…', delete: 'Sil', 'export.name': 'pocket-sayfa', 'export.title': 'PNG olarak dışa aktar',
+    'menu.lang': 'Dil', 'menu.theme': 'Tema', 'theme.paper': 'Kağıt',
   },
   en: {
     corner: 'Hold 1 second and pull', 'tool.select': 'Select / Move (V)', 'tool.text': 'Text (T) — click empty space',
@@ -43,6 +44,7 @@ const I18N = {
     export: 'Export page as PNG', fold: 'Fold to corner (Esc)', quit: 'Quit', 'page.add': 'New page', grip: 'Resize',
     hint: 'Double-click to write · Ctrl+V to paste an image', saved: 'saved', 'page.delete': 'Delete page', 'page.confirm': 'Delete?',
     'ph.text': 'Write…', 'ph.check': 'To do…', delete: 'Delete', 'export.name': 'pocket-page', 'export.title': 'Export as PNG',
+    'menu.lang': 'Language', 'menu.theme': 'Theme', 'theme.paper': 'Paper',
   },
 };
 let lang = 'tr';
@@ -63,13 +65,65 @@ brandBtn.addEventListener('click', () => {
   const open = langPop.classList.toggle('open');
   brandBtn.classList.toggle('open', open);
 });
-langPop.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+langPop.querySelectorAll('button[data-lang]').forEach(b => b.addEventListener('click', () => {
   lang = b.dataset.lang;
   doc.lang = lang;
-  langPop.classList.remove('open'); brandBtn.classList.remove('open');
+  closeBrandMenu();
   applyLang();
   scheduleSave();
 }));
+function closeBrandMenu() { langPop.classList.remove('open'); brandBtn.classList.remove('open'); }
+
+// ==================================================================
+// Tema
+// ==================================================================
+const THEMES = ['modern', 'venom', 'paper', 'neon'];
+const cssVar = (n) => getComputedStyle(body).getPropertyValue(n).trim();
+let theme = 'modern';
+
+function applyTheme(t, { animate = false } = {}) {
+  theme = THEMES.includes(t) ? t : 'modern';
+  body.dataset.theme = theme;
+  langPop.querySelectorAll('button[data-theme]').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+  window.api.setMargin(parseInt(cssVar('--fx-margin')) || 0);
+  if (theme === 'venom') buildBlobs();
+  if (animate) playReveal();
+  redraw();
+}
+langPop.querySelectorAll('button[data-theme]').forEach(b => b.addEventListener('click', () => {
+  doc.theme = b.dataset.theme;
+  closeBrandMenu();
+  applyTheme(doc.theme, { animate: true });
+  scheduleSave();
+}));
+
+// Venom: kenarlardan taşan damlalar (bir kez üretilir)
+const fx = document.getElementById('fx');
+function buildBlobs() {
+  const goo = fx.querySelector('.goo');
+  if (goo.querySelector('.blob')) return;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  for (let i = 0; i < 9; i++) {
+    const b = document.createElement('span');
+    const side = i % 2 ? 'r' : 'b';
+    b.className = 'blob ' + side;
+    b.style.setProperty('--s', rnd(18, 44).toFixed(0) + 'px');
+    b.style.setProperty('--p', rnd(8, 92).toFixed(0) + '%');
+    b.style.setProperty('--d', rnd(3.5, 7).toFixed(1) + 's');
+    b.style.setProperty('--delay', (-rnd(0, 6)).toFixed(1) + 's');
+    b.style.setProperty('--tx', (side === 'r' ? rnd(10, 30) : rnd(-8, 8)).toFixed(0) + 'px');
+    b.style.setProperty('--ty', (side === 'b' ? rnd(10, 34) : rnd(-8, 8)).toFixed(0) + 'px');
+    goo.appendChild(b);
+  }
+}
+function playReveal() {
+  for (const el of [pocket, fx]) {
+    el.classList.remove('reveal');
+    void el.offsetWidth; // animasyonu yeniden tetikle
+    el.classList.add('reveal');
+    el.addEventListener('animationend', () => el.classList.remove('reveal'), { once: true });
+  }
+}
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 const page = () => doc.pages[doc.current];
@@ -145,9 +199,9 @@ window.api.onState((s) => {
     window.addEventListener('mousemove', onDragMove);
     window.addEventListener('mouseup', onDragUp);
   } else {
-    pocket.style.width  = '100%';
-    pocket.style.height = '100%';
-    if (s === 'open') { resizeCanvas(); focusLastBlock(); }
+    pocket.style.width  = '';   // CSS: 100% - efekt payı
+    pocket.style.height = '';
+    if (s === 'open') { resizeCanvas(); focusLastBlock(); if (theme === 'venom') playReveal(); }
   }
 });
 
@@ -534,7 +588,9 @@ function resizeCanvas() {
 }
 new ResizeObserver(resizeCanvas).observe(canvas);
 
+const resolveColor = (c) => (c === 'ink' || c === '#e8ebf5') ? cssVar('--text') : c;
 function setStyle(c, w) {
+  c = resolveColor(c);
   ctx.strokeStyle = c; ctx.fillStyle = c;
   ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 }
@@ -603,14 +659,14 @@ function inkBox(it) {
 function drawInkSelection(it) {
   const { l, t, r, b } = inkBox(it);
   ctx.save();
-  ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = '#7c8cff';
+  ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = cssVar('--accent');
   ctx.strokeRect(l, t, r - l, b - t);
   ctx.setLineDash([]);
   // boyut tutamacı (sağ alt)
-  ctx.fillStyle = '#7c8cff';
+  ctx.fillStyle = cssVar('--accent');
   ctx.fillRect(r - HANDLE / 2, b - HANDLE / 2, HANDLE, HANDLE);
   // sil düğmesi (sağ üst)
-  ctx.beginPath(); ctx.arc(r, t, 8, 0, Math.PI * 2); ctx.fillStyle = '#e5484d'; ctx.fill();
+  ctx.beginPath(); ctx.arc(r, t, 8, 0, Math.PI * 2); ctx.fillStyle = cssVar('--danger'); ctx.fill();
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6;
   ctx.beginPath(); ctx.moveTo(r - 3, t - 3); ctx.lineTo(r + 3, t + 3); ctx.moveTo(r + 3, t - 3); ctx.lineTo(r - 3, t + 3); ctx.stroke();
   ctx.restore();
@@ -840,5 +896,6 @@ function scheduleSave() {
   doc = await window.api.load();
   lang = doc.lang === 'en' ? 'en' : 'tr';
   applyLang();
+  applyTheme(doc.theme);
   renderPage();
 })();

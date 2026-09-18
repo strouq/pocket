@@ -11,6 +11,7 @@ const DEFAULT_SIZE = { w: 520, h: 600 };
 
 let win = null;
 let state = 'folded'; // folded | dragging | open
+let fxMargin = 0;     // temaya göre cebin dışına taşan efektler için pencere payı
 
 const dataFile = () => path.join(app.getPath('userData'), 'pocket.json');
 const imageDir = () => path.join(app.getPath('userData'), 'images');
@@ -51,6 +52,16 @@ function setState(next, bounds) {
   state = next;
   win.setBounds(bounds);
   win.webContents.send('state', state);
+}
+
+// Açık cep: kaydedilen boyut + efekt payı (çalışma alanına sığdırılır)
+function openBounds(size) {
+  const wa = workArea();
+  return {
+    x: wa.x, y: wa.y,
+    width: Math.min(size.w + fxMargin, wa.width),
+    height: Math.min(size.h + fxMargin, wa.height),
+  };
 }
 
 function foldBounds() {
@@ -97,14 +108,18 @@ ipcMain.on('end-drag', (_e, { w, h }) => {
   if (w < MIN_OPEN || h < MIN_OPEN) {
     w = doc.size.w; h = doc.size.h;
   }
-  w = Math.min(Math.round(w), wa.width);
-  h = Math.min(Math.round(h), wa.height);
-  setState('open', { x: wa.x, y: wa.y, width: w, height: h });
+  w = Math.min(Math.round(w), wa.width - fxMargin);
+  h = Math.min(Math.round(h), wa.height - fxMargin);
   doc.size = { w, h };
   saveData(doc);
+  setState('open', openBounds(doc.size));
 });
 
 ipcMain.on('fold', () => setState('folded', foldBounds()));
+ipcMain.on('set-margin', (_e, m) => {
+  fxMargin = Math.max(0, Number(m) || 0);
+  if (state === 'open') setState('open', openBounds(loadData().size));
+});
 ipcMain.on('quit', () => app.quit());
 
 ipcMain.handle('load', () => loadData());

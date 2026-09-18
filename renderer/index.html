@@ -17,14 +17,33 @@
     </svg>
   </div>
 
+  <!-- Tema efekt katmanı (Venom: cebin dışına taşan sıvı) -->
+  <div id="fx">
+    <div class="goo"><div class="base"></div></div>
+    <div class="sheen"></div>
+  </div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo" />
+      <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+    </filter>
+  </svg>
+
   <!-- Cep -->
   <div id="pocket">
     <header class="bar">
       <div class="brand-wrap">
         <button class="brand" id="brand" title="Language / Dil"><span class="dot"></span><span class="brand-text">Pocket</span><span class="caret"></span></button>
         <div class="popover menu" id="lang-pop">
+          <div class="menu-title" data-i18n="menu.lang"></div>
           <button data-lang="tr">Türkçe</button>
           <button data-lang="en">English</button>
+          <div class="menu-title" data-i18n="menu.theme"></div>
+          <button data-theme="modern">Modern</button>
+          <button data-theme="venom">Venom</button>
+          <button data-theme="paper" data-i18n="theme.paper"></button>
+          <button data-theme="neon">Neon</button>
         </div>
       </div>
 
@@ -59,7 +78,7 @@
         </div>
         <span class="sep"></span>
         <div class="colors">
-          <button class="swatch active" data-color="#e8ebf5" style="--c:#e8ebf5"></button>
+          <button class="swatch active" data-color="ink" style="--c:var(--text)"></button>
           <button class="swatch" data-color="#7c8cff" style="--c:#7c8cff"></button>
           <button class="swatch" data-color="#ff6b8b" style="--c:#ff6b8b"></button>
           <button class="swatch" data-color="#ffd166" style="--c:#ffd166"></button>
