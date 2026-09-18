@@ -5,8 +5,9 @@
 **[⬇ Download](https://github.com/strouq/pocket/releases/latest)** — Windows `.exe` · macOS `.dmg` (Apple Silicon / Intel)
 
 - Windows: run the `.exe`. If SmartScreen appears, click *More info → Run anyway* (unsigned build).
-- macOS: open the `.dmg`, drag Pocket to Applications. On first launch **right-click → Open** (unsigned build);
-  if macOS says the app is damaged, run `xattr -cr /Applications/Pocket.app` in Terminal once.
+- macOS: open the `.dmg`, drag Pocket to Applications. The build is not notarized, so on first launch macOS
+  says *"Apple could not verify…"* — click **Done**, then go to **System Settings → Privacy & Security**,
+  scroll down and click **Open Anyway**. (Or run `xattr -cr /Applications/Pocket.app` in Terminal once.)
 
 A quick-note pocket that you pull out of the top-left corner of your desktop.
 Hold the corner for 1 second, drag diagonally, take your notes, fold it back with `–`.
@@ -48,8 +49,9 @@ Copyright (c) 2026 strouq
 **[⬇ İndir](https://github.com/strouq/pocket/releases/latest)** — Windows `.exe` · macOS `.dmg` (Apple Silicon / Intel)
 
 - Windows: `.exe`'yi çalıştır. SmartScreen uyarısı çıkarsa *Daha fazla bilgi → Yine de çalıştır* (derleme imzasız).
-- macOS: `.dmg`'yi aç, Pocket'ı Applications'a sürükle. İlk açılışta **sağ tık → Aç** (derleme imzasız);
-  "uygulama hasarlı" derse Terminal'de bir kez `xattr -cr /Applications/Pocket.app` çalıştır.
+- macOS: `.dmg`'yi aç, Pocket'ı Applications'a sürükle. Derleme notarize edilmediği için ilk açılışta
+  *"Apple could not verify…"* uyarısı çıkar — **Done** de, sonra **Sistem Ayarları → Gizlilik ve Güvenlik**'te
+  aşağı inip **Yine de Aç** düğmesine bas. (Ya da Terminal'de bir kez `xattr -cr /Applications/Pocket.app`.)
 
 Masaüstünün sol üst köşesinden çekilen hızlı not cebi. Ekranın köşesine 1 saniye
 basılı tut, çaprazlama çek; notlarını al, `–` ile geri katla.
