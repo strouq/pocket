@@ -6,8 +6,8 @@
   if (q.get('cursor') === '1') document.body.classList.add('show-cursor');
 
   const T = {
-    tr: { items: ['Market alışverişi', 'Bankayı ara', "v0.2'yi yayınla"], note: 'Bu grafiği rapora ekle', saved: 'pocket-sayfa-1.png kaydedildi', end: 'Köşeden çek, notunu al, geri katla.' },
-    en: { items: ['Buy groceries', 'Call the bank', 'Ship v0.2'], note: 'Add this chart to the report', saved: 'pocket-page-1.png saved', end: 'Pull from the corner, take a note, fold it back.' },
+    tr: { items: ['Müşteri mailine dön', 'Q3 raporunu gözden geçir', 'Ekiple sync 15:00'], file: 'pocket-sayfa-1.png', saved: 'pocket-sayfa-1.png kaydedildi' },
+    en: { items: ['Reply to client email', 'Review Q3 report', 'Team sync at 3 PM'], file: 'pocket-page-1.png', saved: 'pocket-page-1.png saved' },
   }[LANG];
 
   const cur = document.getElementById('cursor');
@@ -16,7 +16,32 @@
   const endCard = document.getElementById('end');
   const toastText = document.getElementById('toast-text');
   toastText.textContent = T.saved;
-  document.getElementById('end-text').textContent = T.end;
+  const fileIcon = document.getElementById('exported');
+  fileIcon.textContent = T.file;
+  const viewer = document.getElementById('viewer');
+  viewer.querySelector('.vtitle').textContent = T.file;
+
+  // Dışa aktarılan PNG'yi gösteren sahte görüntüleyici: kağıdın kopyası
+  function openViewer() {
+    const frame = viewer.querySelector('.frame');
+    frame.innerHTML = '';
+    const pr = paper.getBoundingClientRect();
+    const clone = paper.cloneNode(true);
+    clone.querySelector('#fmt')?.remove();
+    clone.querySelectorAll('.block').forEach(b => b.classList.remove('selected', 'editing'));
+    clone.style.width = pr.width + 'px'; clone.style.height = pr.height + 'px';
+    clone.style.background = getComputedStyle(pocket).backgroundColor;
+    const c2 = clone.querySelector('canvas');
+    c2.width = canvas.width; c2.height = canvas.height;
+    c2.getContext('2d').drawImage(canvas, 0, 0);
+    const maxW = innerWidth * .62, maxH = innerHeight * .66;
+    const s = Math.min(1.15, maxW / pr.width, maxH / pr.height);
+    frame.style.width = pr.width * s + 'px'; frame.style.height = pr.height * s + 'px';
+    clone.style.transform = `scale(${s})`;
+    frame.appendChild(clone);
+    viewer.classList.add('show');
+  }
+  const closeViewer = () => viewer.classList.remove('show');
   window.demoToast = () => { toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 1800); };
 
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -97,7 +122,9 @@
 
   // ------------------------------------------------------------ senaryo
   async function run() {
-    endCard.classList.remove('show');
+    endCard.classList.remove('show'); cur.classList.remove('hide');
+    fileIcon.classList.remove('show', 'sel'); closeViewer();
+    applyTheme(q.get('theme') || 'modern');
     window.demoShim.fold();
     cx = innerWidth * .55; cy = innerHeight * .55; place();
     await sleep(1200);
@@ -149,9 +176,21 @@
     await dragPath(canvas, [[row.right + 24, row.top + row.height / 2], [ex - rx - 10, ey - ry - 8]], 550);
     await sleep(500);
 
-    // 6) PNG dışa aktar
+    // 6) PNG dışa aktar -> masaüstünde dosya belirir -> çift tıkla aç -> kapat
     await clickEl(document.getElementById('export'));
-    await sleep(1800);
+    await sleep(900);
+    fileIcon.classList.add('show');
+    await sleep(1300);
+    await moveTo(...Object.values(center(fileIcon)), 700);
+    fileIcon.classList.add('sel');
+    press(); ripple(); await sleep(80); release(); await sleep(110); press(); ripple(); await sleep(80); release();
+    await sleep(250);
+    openViewer();
+    await moveTo(innerWidth * .5, innerHeight * .78, 700);
+    await sleep(2400);
+    await clickEl(viewer.querySelector('.vclose'), 600);
+    closeViewer(); fileIcon.classList.remove('sel');
+    await sleep(600);
 
     // 7) katla
     await clickEl(document.getElementById('fold'));
@@ -160,12 +199,19 @@
 
     // 8) tekrar aç: sürüklemeden bırak -> son boyutta
     await pullFromCorner(null);
-    await moveTo(innerWidth * .45, innerHeight * .7, 900);
-    await sleep(2200);
+    await sleep(1400);
 
-    // 9) kapanış
+    // 9) tema: Beyaz
+    await clickEl(document.getElementById('brand'));
+    await sleep(500);
+    await clickEl(langPop.querySelector('[data-theme="light"]'), 500);
+    await moveTo(innerWidth * .45, innerHeight * .7, 900);
+    await sleep(2600);
+
+    // 10) kapanış
+    cur.classList.add('hide');
     endCard.classList.add('show');
-    await sleep(3500);
+    await sleep(4200);
     if (q.get('loop') === '1') { endCard.classList.remove('show'); await sleep(600); run(); }
   }
 

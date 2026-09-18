@@ -18,9 +18,10 @@ const html = `<!doctype html>
 <body data-state="folded" data-tool="select">
   <div id="desktop">
     <div class="icons">
-      <div style="--ic:#3b82f6">Documents</div>
-      <div style="--ic:#f59e0b">Photos</div>
-      <div style="--ic:#10b981">Music</div>
+      <div>Documents</div>
+      <div>Photos</div>
+      <div>Music</div>
+      <div class="file" id="exported"></div>
     </div>
     <div id="taskbar"><span class="start"></span><span></span><span></span><span></span><span class="clock">14:32</span></div>
   </div>
@@ -35,7 +36,11 @@ ${body.trim()}
   </div>
   <div id="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>V</kbd></div>
   <div id="toast"><span class="ok">✓</span><span id="toast-text"></span></div>
-  <div id="end"><div><h1>POCKET</h1><p id="end-text"></p><p style="margin-top:14px;color:#7c8cff">github.com/strouq/pocket</p></div></div>
+  <div id="viewer">
+    <div class="vbar"><span class="app"></span><span class="vtitle"></span><button class="vclose">×</button></div>
+    <div class="vbody"><div class="frame"></div></div>
+  </div>
+  <div id="end"><div class="logo"><img src="../build/icon.png" alt="" /><span>Pocket</span></div></div>
 
   <script src="api-shim.js"></script>
   <script src="../renderer/app.js"></script>
