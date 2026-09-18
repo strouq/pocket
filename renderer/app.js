@@ -1,4 +1,4 @@
-const HOLD_MS = 1000;
+const HOLD_MS = 500;
 const SHAPES = ['line', 'arrow', 'rect', 'ellipse'];
 const INK_TOOLS = ['pen', 'eraser', ...SHAPES];
 
@@ -29,22 +29,22 @@ let lastPointer = { x: 40, y: 40 }; // yapıştırılan görselin düşeceği ye
 // ==================================================================
 const I18N = {
   tr: {
-    corner: '1 saniye basılı tut ve çek', 'tool.select': 'Seç / Taşı (V)', 'tool.text': 'Yazı (T) — boş yere tıkla',
+    corner: 'Yarım saniye basılı tut ve çek', 'tool.select': 'Seç / Taşı (V)', 'tool.text': 'Yazı (T) — boş yere tıkla',
     'tool.check': 'Checklist (C) — boş yere tıkla', 'tool.pen': 'Kalem (P)', 'tool.eraser': 'Silgi (E) — çizgiyi/şekli siler',
     'tool.shapes': 'Şekiller', 'tool.line': 'Çizgi (L)', 'tool.arrow': 'Ok (A)', 'tool.rect': 'Dikdörtgen (R)', 'tool.ellipse': 'Elips (O)',
     export: 'Sayfayı PNG olarak dışa aktar', fold: 'Köşeye katla (Esc)', quit: 'Kapat', 'page.add': 'Yeni sayfa', grip: 'Boyutu değiştir',
     hint: 'Yazı için çift tıkla · Ctrl+V ile görsel yapıştır', saved: 'kaydedildi', 'page.delete': 'Sayfayı sil', 'page.confirm': 'Sil?',
     'ph.text': 'Yaz…', 'ph.check': 'Yapılacak…', delete: 'Sil', 'export.name': 'pocket-sayfa', 'export.title': 'PNG olarak dışa aktar',
-    'menu.lang': 'Dil', 'menu.theme': 'Tema', 'theme.paper': 'Kağıt',
+    'menu.lang': 'Dil', 'menu.theme': 'Tema', 'theme.paper': 'Kağıt', 'theme.light': 'Beyaz',
   },
   en: {
-    corner: 'Hold 1 second and pull', 'tool.select': 'Select / Move (V)', 'tool.text': 'Text (T) — click empty space',
+    corner: 'Hold half a second and pull', 'tool.select': 'Select / Move (V)', 'tool.text': 'Text (T) — click empty space',
     'tool.check': 'Checklist (C) — click empty space', 'tool.pen': 'Pen (P)', 'tool.eraser': 'Eraser (E) — removes a stroke/shape',
     'tool.shapes': 'Shapes', 'tool.line': 'Line (L)', 'tool.arrow': 'Arrow (A)', 'tool.rect': 'Rectangle (R)', 'tool.ellipse': 'Ellipse (O)',
     export: 'Export page as PNG', fold: 'Fold to corner (Esc)', quit: 'Quit', 'page.add': 'New page', grip: 'Resize',
     hint: 'Double-click to write · Ctrl+V to paste an image', saved: 'saved', 'page.delete': 'Delete page', 'page.confirm': 'Delete?',
     'ph.text': 'Write…', 'ph.check': 'To do…', delete: 'Delete', 'export.name': 'pocket-page', 'export.title': 'Export as PNG',
-    'menu.lang': 'Language', 'menu.theme': 'Theme', 'theme.paper': 'Paper',
+    'menu.lang': 'Language', 'menu.theme': 'Theme', 'theme.paper': 'Paper', 'theme.light': 'Light',
   },
 };
 let lang = 'tr';
@@ -77,7 +77,7 @@ function closeBrandMenu() { langPop.classList.remove('open'); brandBtn.classList
 // ==================================================================
 // Tema
 // ==================================================================
-const THEMES = ['modern', 'venom', 'paper', 'neon'];
+const THEMES = ['modern', 'venom', 'light', 'paper', 'neon'];
 const cssVar = (n) => getComputedStyle(body).getPropertyValue(n).trim();
 let theme = 'modern';
 

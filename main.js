@@ -4,7 +4,7 @@ const fs = require('fs');
 const { pathToFileURL } = require('url');
 
 // Katlı haldeyken sol üstte duran görünmez köşe penceresinin boyutu (px)
-const CORNER = 24;
+const CORNER = 10;
 // Bırakıldığında bundan küçük çekildiyse son kaydedilen boyutta açılır
 const MIN_OPEN = 160;
 const DEFAULT_SIZE = { w: 520, h: 600 };

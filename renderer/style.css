@@ -35,7 +35,7 @@ svg { display: block; }
 ------------------------------------------------------------------ */
 #corner {
   position: fixed; top: 0; left: 0;
-  width: 24px; height: 24px;
+  width: 10px; height: 10px;
   cursor: default;
   display: none;
 }
@@ -45,31 +45,16 @@ body[data-state="folded"] #corner { display: block; }
   position: absolute; top: 0; left: 0;
   width: 3px; height: 3px; border-radius: 0 0 3px 0;
   background: #000;
+  transform-origin: top left;
   transition: background .15s, transform .15s;
 }
 #corner:hover .pip { background: var(--accent); transform: scale(1.6); }
-#corner.holding .pip { opacity: 0; }
-
-/* 1 sn dolum halkası — sadece basılı tutarken görünür */
-.ring {
-  position: absolute; inset: 0;
-  width: 24px; height: 24px;
-  opacity: 0;
-  transition: opacity .15s;
-  transform: rotate(-90deg);
-  transform-origin: 12px 12px;
-}
-.ring circle { fill: none; stroke-width: 2; stroke-linecap: round; }
-.ring-track { stroke: rgba(255 255 255 / .15); }
-.ring-fill {
-  stroke: var(--accent);
-  stroke-dasharray: 50.27;      /* 2πr, r=8 */
-  stroke-dashoffset: 50.27;
-}
-#corner.holding .ring { opacity: 1; }
-#corner.holding .ring-fill {
-  transition: stroke-dashoffset 1s linear;
-  stroke-dashoffset: 0;
+/* 0.5 sn basılı tutma: nokta büyüyerek köşeyi doldurur */
+#corner.holding .pip {
+  background: var(--accent);
+  transform: scale(3.4);
+  border-radius: 0 0 10px 0;
+  transition: transform .5s linear, background .15s;
 }
 
 /* ------------------------------------------------------------------
@@ -393,6 +378,22 @@ body[data-tool="eraser"] #ink { cursor: cell; }
 /* ==================================================================
    Temalar
 ================================================================== */
+
+/* --- Beyaz: temiz, açık --- */
+body[data-theme="light"] {
+  --bg: 255 255 255;
+  --panel-2: rgb(248 249 252);
+  --line: rgba(15 23 42 / .1);
+  --text: #1a1d26;
+  --muted: #7b8194;
+  --accent: #5b6cff;
+  --accent-rgb: 91 108 255;
+  --danger: #e5484d;
+  --dots: rgba(15 23 42 / .12);
+}
+body[data-theme="light"] #pocket { box-shadow: 0 20px 60px rgba(15 23 42 / .22), 0 0 0 1px rgba(15 23 42 / .1); }
+body[data-theme="light"] .bar, body[data-theme="light"] .pages { background: rgba(15 23 42 / .025); }
+body[data-theme="light"] .cb { border-color: rgba(15 23 42 / .3); }
 
 /* --- Kağıt: açık, krem --- */
 body[data-theme="paper"] {

@@ -1,8 +1,8 @@
 {
   "name": "pocket-notes",
   "productName": "Pocket",
-  "version": "0.1.0",
-  "description": "Masaüstünün köşesinden çekilen hızlı not cebi",
+  "version": "0.1.1",
+  "description": "Pocket",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
