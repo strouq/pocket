@@ -2,7 +2,8 @@
 // Parametreler: ?lang=tr|en  ?theme=modern|venom|light|paper|neon  ?loop=1  ?cursor=1 (gerçek imleci göster)
 (async () => {
   const q = new URLSearchParams(location.search);
-  const LANG = q.get('lang') === 'en' ? 'en' : 'tr';
+  const LANG = q.get('lang') === 'tr' ? 'tr' : 'en';
+  const WAIT = Number(q.get('wait') ?? 10) * 1000; // kayda başlamak için boş bekleme
   if (q.get('cursor') === '1') document.body.classList.add('show-cursor');
 
   const T = {
@@ -90,8 +91,8 @@
   async function pullFromCorner(to) {
     await moveTo(3, 3, 650);
     press(); mev('mousedown', corner, 3, 3);
-    await sleep(700); // 0.5 sn basılı tutma + pay
-    if (to) await moveTo(to[0], to[1], 900, (x, y) => mev('mousemove', window, x, y));
+    await sleep(750); // 0.5 sn basılı tutma + pay
+    if (to) await moveTo(to[0], to[1], 1700, (x, y) => mev('mousemove', window, x, y));
     mev('mouseup', window, cx, cy); release();
     await sleep(500);
   }
@@ -129,7 +130,7 @@
     const browser = document.getElementById('browser');
     browser.classList.remove('show', 'min');
     cx = innerWidth * .55; cy = innerHeight * .55; place();
-    await sleep(900);
+    await sleep(WAIT);
     // tarayıcı açık, kullanıcı işinin başında
     browser.classList.add('show');
     await moveTo(innerWidth * .5, innerHeight * .42, 900);
@@ -220,9 +221,9 @@
     const g = center(grip);
     await moveTo(g.x, g.y, 700);
     press(); mev('mousedown', grip, g.x, g.y); await sleep(250);
-    await moveTo(900, 400, 1000, (x, y) => mev('mousemove', window, x, y));
-    await sleep(500);
-    await moveTo(440, 720, 1100, (x, y) => mev('mousemove', window, x, y));
+    await moveTo(920, g.y, 1300, (x, y) => mev('mousemove', window, x, y));
+    await sleep(450);
+    await moveTo(680, g.y, 900, (x, y) => mev('mousemove', window, x, y));
     await sleep(300);
     mev('mouseup', window, cx, cy); release();
     await moveTo(innerWidth * .45, innerHeight * .75, 900);

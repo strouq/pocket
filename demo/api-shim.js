@@ -33,7 +33,7 @@
       pages: [{ id: 'p1', name: 'Sayfa 1', items: [] }],
       current: 0,
       size,
-      lang: q.get('lang') || 'tr',
+      lang: q.get('lang') || 'en',
       theme: q.get('theme') || 'modern',
     }),
     save() {},

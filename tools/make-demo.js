@@ -8,7 +8,7 @@ const body = src.slice(src.indexOf('>', src.indexOf('<body')) + 1, src.lastIndex
   .replace('<script src="app.js"></script>', '');
 
 const html = `<!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>Pocket — demo</title>
