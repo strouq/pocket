@@ -2,6 +2,9 @@
 
 **English** · [Türkçe](#türkçe)
 
+**[⬇ Download for Windows](https://github.com/strouq/pocket/releases/latest)** — run the `.exe`.
+If SmartScreen appears, click *More info → Run anyway* (the build is unsigned).
+
 A quick-note pocket that you pull out of the top-left corner of your desktop.
 Hold the corner for 1 second, drag diagonally, take your notes, fold it back with `–`.
 
@@ -35,6 +38,9 @@ Copyright (c) 2026 strouq
 ---
 
 ## Türkçe
+
+**[⬇ Windows için indir](https://github.com/strouq/pocket/releases/latest)** — `.exe`'yi çalıştır.
+SmartScreen uyarısı çıkarsa *Daha fazla bilgi → Yine de çalıştır* (derleme imzasız).
 
 Masaüstünün sol üst köşesinden çekilen hızlı not cebi. Ekranın köşesine 1 saniye
 basılı tut, çaprazlama çek; notlarını al, `–` ile geri katla.
