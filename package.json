@@ -6,10 +6,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder",
+    "build": "electron-builder --win",
     "icon": "electron tools/render-icon.js",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac"
+    "build:win": "electron-builder --win"
   },
   "build": {
     "appId": "com.strouq.pocket",
@@ -37,25 +36,7 @@
       "shortcutName": "Pocket",
       "license": "LICENSE"
     },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "arm64",
-            "x64"
-          ]
-        }
-      ],
-      "icon": "build/icon.png",
-      "category": "public.app-category.productivity",
-      "extendInfo": {
-        "LSUIElement": true
-      },
-      "identity": null
-    },
-    "publish": null,
-    "afterPack": "tools/adhoc-sign.js"
+    "publish": null
   },
   "devDependencies": {
     "electron": "^33.0.0",

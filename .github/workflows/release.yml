@@ -1,4 +1,4 @@
-# v* etiketi push edilince Windows + macOS paketlerini derleyip Release'e ekler.
+# v* etiketi push edilince Windows installer'ı derleyip Release'e ekler.
 name: release
 
 on:
@@ -10,10 +10,7 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,32 +18,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build (Windows)
-        if: runner.os == 'Windows'
-        run: npx electron-builder --win --publish never
-      - name: Build (macOS)
-        if: runner.os == 'macOS'
-        run: npx electron-builder --mac --publish never
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"   # imzasız derleme
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}
-          path: |
-            dist/*.exe
-            dist/*.dmg
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
+      - run: npx electron-builder --win --publish never
       - uses: softprops/action-gh-release@v2
         with:
-          files: |
-            artifacts/*.exe
-            artifacts/*.dmg
+          files: dist/*.exe
           generate_release_notes: true
