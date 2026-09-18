@@ -1,6 +1,5 @@
 :root {
   --bg: 18 20 27;
-  --panel: rgb(var(--bg));
   --panel-2: rgb(28 31 40);
   --line: rgba(255 255 255 / 0.08);
   --text: #e8ebf5;
@@ -16,6 +15,9 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* --bg tema tarafından body'de değiştiği için panel rengi burada hesaplanmalı */
+body { --panel: rgb(var(--bg)); }
 
 html, body {
   width: 100%; height: 100%;
@@ -277,6 +279,34 @@ body[data-tool="select"] .block.dragging { opacity: .85; }
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
+/* Biçim çubuğu (düzenlenen bloğun üstünde) */
+#fmt {
+  position: absolute;
+  display: none; align-items: center; gap: 2px;
+  padding: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: 0 8px 24px rgba(0 0 0 / .35);
+  z-index: 20;
+  transform: translateY(-100%);
+  margin-top: -8px;
+}
+#fmt.show { display: flex; }
+#fmt button {
+  min-width: 26px; height: 24px; padding: 0 6px; border-radius: 6px;
+  font-size: 12.5px; color: var(--muted);
+}
+#fmt button:hover { background: rgba(255 255 255 / .08); color: var(--text); }
+#fmt button.active { background: rgba(var(--accent-rgb) / .18); color: var(--accent); }
+#fmt .sep { width: 1px; height: 14px; background: var(--line); margin: 0 3px; }
+
+/* Blok yazı boyutu */
+.block[data-size="0"] .editable { font-size: 12.5px; }
+.block[data-size="2"] .editable { font-size: 17px; }
+.block[data-size="3"] .editable { font-size: 21px; }
+.block[data-size="4"] .editable { font-size: 26px; line-height: 1.35; }
 
 /* Sil düğmesi (seçili blokta, sağ üst) */
 .del {

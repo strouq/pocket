@@ -36,6 +36,7 @@ const I18N = {
     hint: 'Yazı için çift tıkla · Ctrl+V ile görsel yapıştır', saved: 'kaydedildi', 'page.delete': 'Sayfayı sil', 'page.confirm': 'Sil?',
     'ph.text': 'Yaz…', 'ph.check': 'Yapılacak…', delete: 'Sil', 'export.name': 'pocket-sayfa', 'export.title': 'PNG olarak dışa aktar',
     'menu.lang': 'Dil', 'menu.theme': 'Tema', 'theme.paper': 'Kağıt', 'theme.light': 'Beyaz',
+    'fmt.bold': 'Kalın (Ctrl+B)', 'fmt.italic': 'İtalik (Ctrl+I)', 'fmt.underline': 'Altı çizili (Ctrl+U)', 'fmt.smaller': 'Küçült', 'fmt.bigger': 'Büyüt',
   },
   en: {
     corner: 'Hold half a second and pull', 'tool.select': 'Select / Move (V)', 'tool.text': 'Text (T) — click empty space',
@@ -45,6 +46,7 @@ const I18N = {
     hint: 'Double-click to write · Ctrl+V to paste an image', saved: 'saved', 'page.delete': 'Delete page', 'page.confirm': 'Delete?',
     'ph.text': 'Write…', 'ph.check': 'To do…', delete: 'Delete', 'export.name': 'pocket-page', 'export.title': 'Export as PNG',
     'menu.lang': 'Language', 'menu.theme': 'Theme', 'theme.paper': 'Paper', 'theme.light': 'Light',
+    'fmt.bold': 'Bold (Ctrl+B)', 'fmt.italic': 'Italic (Ctrl+I)', 'fmt.underline': 'Underline (Ctrl+U)', 'fmt.smaller': 'Smaller', 'fmt.bigger': 'Bigger',
   },
 };
 let lang = 'tr';
@@ -309,7 +311,8 @@ paper.addEventListener('pointerdown', (e) => {
 });
 
 function renderPage() {
-  blocksEl.innerHTML = '';
+  hideFmt();
+  blocksEl.querySelectorAll('.block').forEach(b => b.remove());
   for (const it of items()) if (['text', 'check', 'image'].includes(it.type)) blocksEl.appendChild(buildBlock(it));
   select(null);
   applyView();
@@ -325,6 +328,7 @@ function buildBlock(it) {
   el.style.left = it.x + 'px';
   el.style.top = it.y + 'px';
   if (it.w) el.style.width = it.w + 'px';
+  if (it.size != null) el.dataset.size = it.size;
 
   if (it.type === 'text') {
     const ed = document.createElement('div');
@@ -378,8 +382,9 @@ function buildCheckItem(block, ci) {
   ct.contentEditable = 'true';
   ct.spellcheck = false;
   ct.dataset.placeholder = t('ph.check');
-  ct.textContent = ci.text || '';
-  ct.addEventListener('input', () => { ci.text = ct.textContent; scheduleSave(); });
+  if (ci.html == null) { ci.html = escapeHtml(ci.text || ''); delete ci.text; }
+  ct.innerHTML = ci.html;
+  ct.addEventListener('input', () => { ci.html = ct.innerHTML; scheduleSave(); });
   ct.addEventListener('keydown', (e) => {
     const idx = block.items.indexOf(ci);
     if (e.key === 'Enter') {
@@ -410,6 +415,7 @@ function buildCheckItem(block, ci) {
   return row;
 }
 
+const escapeHtml = (s) => s.replace(/[&<>]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
 function plainPaste(e) {
   if (e.clipboardData.files?.length) return; // görsel: global paste halleder
   e.preventDefault();
@@ -438,6 +444,7 @@ function removeItem(id) {
   const i = items().findIndex(x => x.id === id);
   if (i < 0) return;
   items().splice(i, 1);
+  if (fmtBlock?.dataset.id === id) hideFmt();
   elOf(id)?.remove();
   if (selectedId === id) select(null);
   updateHint();
@@ -458,6 +465,7 @@ function placeBlock(it, focusSel) {
   const el = elOf(it.id);
   el.classList.add('editing');
   el.querySelector(focusSel).focus();
+  showFmt(el);
 }
 function newTextAt(p) {
   placeBlock({ id: uid(), type: 'text', x: Math.round(p.x - 8), y: Math.round(p.y - 14), w: 260, html: '' }, '.editable');
@@ -493,6 +501,7 @@ paper.addEventListener('pointerdown', (e) => {
 // Tık (sürüklemeden) -> tıklanan yerden yazmaya başla
 function startEditing(blk, x, y) {
   blk.classList.add('editing');
+  showFmt(blk);
   const range = document.caretRangeFromPoint(x, y);
   const ed = range?.startContainer?.parentElement?.closest('.editable') || blk.querySelector('.editable');
   if (!ed) return;
@@ -502,7 +511,57 @@ function startEditing(blk, x, y) {
 }
 blocksEl.addEventListener('focusout', (e) => {
   const blk = e.target.closest?.('.block');
-  if (blk && !blk.contains(e.relatedTarget)) blk.classList.remove('editing');
+  if (blk && !blk.contains(e.relatedTarget) && !e.relatedTarget?.closest?.('#fmt')) { blk.classList.remove('editing'); hideFmt(); }
+});
+
+// ==================================================================
+// Biçim çubuğu: kalın / italik / altı çizili / boyut
+// ==================================================================
+const fmt = document.getElementById('fmt');
+let fmtBlock = null;
+
+function showFmt(blk) {
+  const it = byId(blk.dataset.id);
+  if (!it || it.type === 'image') return;
+  fmtBlock = blk;
+  fmt.style.left = it.x + 'px';
+  fmt.style.top = it.y + 'px';
+  fmt.classList.add('show');
+  updateFmtState();
+}
+function hideFmt() { fmt.classList.remove('show'); fmtBlock = null; }
+function updateFmtState() {
+  for (const b of fmt.querySelectorAll('[data-cmd]')) {
+    let on = false;
+    try { on = document.queryCommandState(b.dataset.cmd); } catch {}
+    b.classList.toggle('active', on);
+  }
+}
+// odak kaybolmasın diye mousedown engellenir
+fmt.addEventListener('mousedown', (e) => e.preventDefault());
+fmt.querySelectorAll('[data-cmd]').forEach(b => b.addEventListener('click', () => {
+  document.execCommand(b.dataset.cmd);
+  updateFmtState();
+  syncEditable();
+}));
+fmt.querySelectorAll('[data-size]').forEach(b => b.addEventListener('click', () => {
+  if (!fmtBlock) return;
+  const it = byId(fmtBlock.dataset.id);
+  it.size = Math.max(0, Math.min(4, (it.size ?? 1) + Number(b.dataset.size)));
+  fmtBlock.dataset.size = it.size;
+  scheduleSave();
+}));
+// execCommand sonrası içerik değişimini veriye yaz
+function syncEditable() {
+  const ed = document.activeElement;
+  if (ed?.isContentEditable) ed.dispatchEvent(new Event('input'));
+}
+document.addEventListener('selectionchange', () => { if (fmtBlock) updateFmtState(); });
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && isTyping() && ['b', 'i', 'u'].includes(e.key.toLowerCase())) {
+    // Chromium bunları zaten uygular; sadece veriyi ve durumu güncelle
+    setTimeout(() => { syncEditable(); updateFmtState(); }, 0);
+  }
 });
 
 function startMove(e, it, blk) {
@@ -519,6 +578,7 @@ function startMove(e, it, blk) {
     it.x = Math.round(ox + p.x - start.x);
     it.y = Math.round(oy + p.y - start.y);
     blk.style.left = it.x + 'px'; blk.style.top = it.y + 'px';
+    if (fmtBlock === blk) { fmt.style.left = it.x + 'px'; fmt.style.top = it.y + 'px'; }
   };
   const up = (ev) => {
     blk.removeEventListener('pointermove', move); blk.removeEventListener('pointerup', up);

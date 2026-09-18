@@ -98,7 +98,16 @@
     </header>
 
     <div class="paper" id="paper">
-      <div id="blocks"></div>
+      <div id="blocks">
+        <div id="fmt">
+          <button data-cmd="bold" data-i18n-title="fmt.bold"><b>B</b></button>
+          <button data-cmd="italic" data-i18n-title="fmt.italic"><i>I</i></button>
+          <button data-cmd="underline" data-i18n-title="fmt.underline"><u>U</u></button>
+          <span class="sep"></span>
+          <button data-size="-1" data-i18n-title="fmt.smaller">A−</button>
+          <button data-size="1" data-i18n-title="fmt.bigger">A+</button>
+        </div>
+      </div>
       <canvas id="ink"></canvas>
       <div class="hint" id="hint" data-i18n="hint"></div>
     </div>
