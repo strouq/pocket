@@ -161,7 +161,9 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.whenReady().then(() => {
-    // Sadece paketlenmiş exe kendini Windows başlangıcına ekler;
+    // macOS: Dock'ta ikon gösterme (köşede yaşayan bir araç)
+    if (process.platform === 'darwin') app.dock?.hide();
+    // Sadece paketlenmiş uygulama kendini sistem başlangıcına ekler;
     // kullanıcı Görev Yöneticisi'nden kapatırsa o ayar geçerli olur.
     if (app.isPackaged) {
       app.setLoginItemSettings({ openAtLogin: true });
