@@ -51,7 +51,32 @@ function workArea() { return screen.getPrimaryDisplay().workArea; }
 function setState(next, bounds) {
   state = next;
   win.setBounds(bounds);
+  // Windows pencereyi 10x10'dan küçük yapmaz (gerçekte ~64x64 olur); katlı
+  // haldeyken tıklamalar alttaki masaüstüne geçsin, fare köşe noktasının
+  // üstüne gelince pencere tekrar tıklanabilir olsun (bkz. 'corner-hover').
+  setClickThrough(state === 'folded');
   win.webContents.send('state', state);
+}
+
+let hoverPoll = null;
+function setClickThrough(on) {
+  win.setIgnoreMouseEvents(on, { forward: true });
+  clearInterval(hoverPoll);
+  hoverPoll = null;
+  // Nokta üstündeyken: imleç 10 px'lik karenin dışına çıkınca tekrar geçirgen ol.
+  // (Sayfa 10x10 ama gerçek pencere daha büyük olduğundan renderer 'mouseleave' alamıyor.)
+  if (!on && state === 'folded') {
+    hoverPoll = setInterval(() => {
+      if (state !== 'folded') { clearInterval(hoverPoll); hoverPoll = null; return; }
+      const p = screen.getCursorScreenPoint();
+      const b = foldBounds();
+      if (p.x < b.x || p.y < b.y || p.x >= b.x + b.width || p.y >= b.y + b.height) {
+        setClickThrough(true);
+        // Chromium çıkışı göremediği için ipucu (title) asılı kalıyor; yapay çıkış olayı gönder
+        win.webContents.sendInputEvent({ type: 'mouseLeave', x: 0, y: 0 });
+      }
+    }, 100);
+  }
 }
 
 // Açık cep: kaydedilen boyut + efekt payı (çalışma alanına sığdırılır)
@@ -89,6 +114,7 @@ function createWindow() {
     },
   });
   win.setAlwaysOnTop(true, 'screen-saver');
+  setClickThrough(true); // katlı başlar
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 }
 
@@ -116,6 +142,11 @@ ipcMain.on('end-drag', (_e, { w, h }) => {
 });
 
 ipcMain.on('fold', () => setState('folded', foldBounds()));
+// Fare 10 px'lik köşe noktasına girdi (yalnızca katlı halde anlamlı);
+// çıkışı ana süreç imleç konumundan takip eder (setClickThrough)
+ipcMain.on('corner-hover', () => {
+  if (state === 'folded') setClickThrough(false);
+});
 ipcMain.on('set-margin', (_e, m) => {
   fxMargin = Math.max(0, Number(m) || 0);
   if (state === 'open') setState('open', openBounds(loadData().size));

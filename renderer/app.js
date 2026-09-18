@@ -161,6 +161,8 @@ corner.addEventListener('mouseup', () => {
   cancelHold();
 });
 corner.addEventListener('mouseleave', () => { if (!holdFired) cancelHold(); });
+// Katlı pencere normalde tıklamaya geçirgen; fare noktaya gelince yakalamaya başlar
+corner.addEventListener('mouseenter', () => window.api.cornerHover());
 
 // ==================================================================
 // Sürükleme (ilk açılış + sağ alt tutamaçtan yeniden boyutlandırma)

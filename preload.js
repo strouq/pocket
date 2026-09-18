@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('api', {
   beginDrag: () => ipcRenderer.send('begin-drag'),
   endDrag: (w, h) => ipcRenderer.send('end-drag', { w, h }),
   fold: () => ipcRenderer.send('fold'),
+  cornerHover: () => ipcRenderer.send('corner-hover'),
   quit: () => ipcRenderer.send('quit'),
   load: () => ipcRenderer.invoke('load'),
   save: (doc) => ipcRenderer.send('save', doc),
