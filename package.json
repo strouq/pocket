@@ -1,0 +1,22 @@
+{
+  "name": "pocket-notes",
+  "productName": "Pocket",
+  "version": "0.1.0",
+  "description": "Masaüstünün köşesinden çekilen hızlı not cebi",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.pocket.notes",
+    "productName": "Pocket",
+    "files": ["main.js", "preload.js", "renderer/**/*"],
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg" }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

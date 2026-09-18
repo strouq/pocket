@@ -1,0 +1,371 @@
+:root {
+  --bg: 18 20 27;
+  --panel: rgb(var(--bg));
+  --line: rgba(255 255 255 / 0.08);
+  --text: #e8ebf5;
+  --muted: #8b90a5;
+  --accent: #7c8cff;
+  --danger: #e5484d;
+  --radius: 20px;
+  --bar-h: 42px;
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: transparent;
+  overflow: hidden;
+  font-family: var(--font);
+  color: var(--text);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; }
+svg { display: block; }
+
+/* ------------------------------------------------------------------
+   Köşe (katlı hal): çıplak gözle neredeyse görünmez bir nokta
+------------------------------------------------------------------ */
+#corner {
+  position: fixed; top: 0; left: 0;
+  width: 24px; height: 24px;
+  cursor: default;
+  display: none;
+}
+body[data-state="folded"] #corner { display: block; }
+
+.pip {
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 3px; border-radius: 0 0 3px 0;
+  background: #000;
+  transition: background .15s, transform .15s;
+}
+#corner:hover .pip { background: var(--accent); transform: scale(1.6); }
+#corner.holding .pip { opacity: 0; }
+
+/* 1 sn dolum halkası — sadece basılı tutarken görünür */
+.ring {
+  position: absolute; inset: 0;
+  width: 24px; height: 24px;
+  opacity: 0;
+  transition: opacity .15s;
+  transform: rotate(-90deg);
+  transform-origin: 12px 12px;
+}
+.ring circle { fill: none; stroke-width: 2; stroke-linecap: round; }
+.ring-track { stroke: rgba(255 255 255 / .15); }
+.ring-fill {
+  stroke: var(--accent);
+  stroke-dasharray: 50.27;      /* 2πr, r=8 */
+  stroke-dashoffset: 50.27;
+}
+#corner.holding .ring { opacity: 1; }
+#corner.holding .ring-fill {
+  transition: stroke-dashoffset 1s linear;
+  stroke-dashoffset: 0;
+}
+
+/* ------------------------------------------------------------------
+   Cep
+------------------------------------------------------------------ */
+#pocket {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-top: 0; border-left: 0;
+  border-bottom-right-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0 0 0 / .55), 0 0 0 1px rgba(0 0 0 / .4);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+body[data-state="open"] #pocket,
+body[data-state="dragging"] #pocket { display: flex; }
+
+/* Sürükleme sırasında: taslak görünüm */
+body[data-state="dragging"] #pocket {
+  outline: 1.5px dashed var(--accent);
+  outline-offset: -1px;
+  background: rgba(var(--bg) / 0.82);
+}
+body[data-state="dragging"] .bar,
+body[data-state="dragging"] .paper,
+body[data-state="dragging"] .pages { opacity: .35; pointer-events: none; }
+body[data-state="dragging"] #grip { display: none; }
+
+#size-badge {
+  position: absolute; right: 14px; bottom: 12px;
+  font-size: 11px; font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  background: rgba(var(--bg) / .9);
+  border: 1px solid rgba(124 140 255 / .4);
+  padding: 3px 8px; border-radius: 999px;
+  display: none;
+}
+body[data-state="dragging"] #size-badge { display: block; }
+
+/* ------------------------------------------------------------------
+   Üst çubuk
+------------------------------------------------------------------ */
+.bar {
+  height: var(--bar-h); flex: 0 0 auto;
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255 255 255 / .02);
+}
+.brand {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; letter-spacing: .04em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.brand .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+.tools { display: flex; align-items: center; gap: 2px; margin-left: 6px; flex: 1; min-width: 0; }
+.tool {
+  position: relative;
+  width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center;
+  color: var(--muted);
+  transition: background .12s, color .12s;
+  flex: 0 0 auto;
+}
+.tool svg { width: 18px; height: 18px; }
+.tool:hover { background: rgba(255 255 255 / .06); color: var(--text); }
+.tool.active { background: rgba(124 140 255 / .18); color: var(--accent); }
+.sep { width: 1px; height: 16px; background: var(--line); margin: 0 4px; flex: 0 0 auto; }
+
+.caret {
+  position: absolute; right: 3px; bottom: 3px;
+  width: 0; height: 0;
+  border-left: 3px solid transparent; border-top: 3px solid transparent;
+  border-right: 3px solid currentColor; border-bottom: 3px solid currentColor;
+  opacity: .6;
+}
+
+.shape-wrap { position: relative; }
+.popover {
+  position: absolute; top: 34px; left: 0;
+  display: none; gap: 2px; padding: 4px;
+  background: rgb(28 31 40);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0 0 0 / .5);
+  z-index: 50;
+}
+.popover.open { display: flex; }
+.popover button {
+  width: 30px; height: 30px; border-radius: 7px;
+  display: grid; place-items: center; color: var(--muted);
+}
+.popover button svg { width: 18px; height: 18px; }
+.popover button:hover { background: rgba(255 255 255 / .08); color: var(--text); }
+.popover button.active { background: rgba(124 140 255 / .18); color: var(--accent); }
+
+.colors { display: flex; gap: 5px; flex: 0 0 auto; }
+.swatch {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--c);
+  outline: 2px solid transparent; outline-offset: 2px;
+  transition: outline-color .12s, transform .12s;
+}
+.swatch:hover { transform: scale(1.15); }
+.swatch.active { outline-color: var(--c); }
+
+.win { display: flex; gap: 2px; margin-left: auto; flex: 0 0 auto; }
+.win button {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center; color: var(--muted);
+}
+.win button svg { width: 12px; height: 12px; }
+.win button:hover { background: rgba(255 255 255 / .08); color: var(--text); }
+#quit:hover { background: var(--danger); color: #fff; }
+
+/* Dar cepte marka ve ayırıcılar gizlenir */
+@media (max-width: 520px) {
+  .brand { display: none; }
+  .bar { padding-left: 8px; }
+}
+@media (max-width: 440px) {
+  .sep { display: none; }
+  .colors { gap: 3px; }
+}
+
+/* ------------------------------------------------------------------
+   Kağıt
+------------------------------------------------------------------ */
+.paper {
+  position: relative; flex: 1; min-height: 0;
+  overflow: hidden;
+  background-image: radial-gradient(rgba(255 255 255 / .06) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+body[data-tool="text"]  .paper { cursor: text; }
+body[data-tool="check"] .paper { cursor: copy; }
+
+.hint {
+  position: absolute; left: 0; right: 0; top: 40%;
+  text-align: center; font-size: 12px; color: var(--muted); opacity: .5;
+  pointer-events: none;
+}
+.hint.hidden { display: none; }
+
+#blocks { position: absolute; inset: 0; }
+
+/* --- Bloklar --- */
+.block {
+  position: absolute;
+  min-width: 80px;
+  border-radius: 8px;
+  outline: 1.5px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color .12s;
+}
+.block.selected { outline-color: var(--accent); }
+body[data-tool="select"] .block:hover { outline-color: rgba(124 140 255 / .4); }
+body[data-tool="select"] .block { cursor: move; }
+body[data-tool="select"] .block:not(.editing) .editable { pointer-events: none; }
+body[data-tool="select"] .block.editing { cursor: move; }
+body[data-tool="select"] .block.editing .editable { cursor: text; }
+body[data-tool="select"] .block.dragging { opacity: .85; }
+
+.editable {
+  outline: none;
+  user-select: text; -webkit-user-select: text;
+  white-space: pre-wrap; word-break: break-word;
+  font-size: 14.5px; line-height: 1.5;
+}
+.editable:empty::before {
+  content: attr(data-placeholder);
+  color: var(--muted); opacity: .6;
+}
+
+.block.text .editable { padding: 6px 8px; }
+
+.block.check .body { padding: 4px 6px; }
+.ci { display: flex; align-items: flex-start; gap: 8px; padding: 2px 2px; }
+.cb {
+  flex: 0 0 auto;
+  width: 16px; height: 16px; margin-top: 3px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255 255 255 / .35);
+  display: grid; place-items: center;
+  transition: background .12s, border-color .12s;
+  pointer-events: auto;
+}
+.cb svg { width: 10px; height: 10px; opacity: 0; }
+.cb:hover { border-color: var(--accent); }
+.ci.done .cb { background: var(--accent); border-color: var(--accent); }
+.ci.done .cb svg { opacity: 1; }
+.ci .ct { flex: 1; min-width: 0; }
+.ci.done .ct { text-decoration: line-through; color: var(--muted); }
+
+.block.image { line-height: 0; }
+.block.image img {
+  display: block; width: 100%; height: auto;
+  border-radius: 6px;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Sil düğmesi (seçili blokta, sağ üst) */
+.del {
+  position: absolute; top: -9px; right: -9px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--danger); color: #fff;
+  font-size: 14px; line-height: 18px; text-align: center;
+  display: none;
+  box-shadow: 0 2px 6px rgba(0 0 0 / .4);
+}
+.del:hover { filter: brightness(1.15); }
+.block.selected .del { display: block; }
+body:not([data-tool="select"]) .del { display: none; }
+
+.paper.panning { cursor: grabbing; }
+
+/* Boyut tutamacı (seçili blokta) */
+.rz {
+  position: absolute; right: -6px; bottom: -6px;
+  width: 12px; height: 12px; border-radius: 3px;
+  background: var(--accent);
+  cursor: nwse-resize;
+  display: none;
+}
+.block.selected .rz { display: block; }
+body:not([data-tool="select"]) .rz { display: none; }
+
+/* Mürekkep katmanı: kalem/silgi/şekil modlarında üstte ve etkileşimli */
+#ink {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  touch-action: none;
+  z-index: 10;
+}
+body[data-tool="pen"] #ink,
+body[data-tool="eraser"] #ink,
+body[data-tool="line"] #ink,
+body[data-tool="arrow"] #ink,
+body[data-tool="rect"] #ink,
+body[data-tool="ellipse"] #ink { pointer-events: auto; cursor: crosshair; }
+body[data-tool="eraser"] #ink { cursor: cell; }
+
+/* ------------------------------------------------------------------
+   Sayfalar
+------------------------------------------------------------------ */
+.pages {
+  flex: 0 0 auto; height: 32px;
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 34px 0 10px;
+  border-top: 1px solid var(--line);
+  background: rgba(255 255 255 / .02);
+}
+#page-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+#page-tabs::-webkit-scrollbar { display: none; }
+.tab {
+  position: relative;
+  height: 22px; min-width: 26px; padding: 0 9px;
+  border-radius: 6px;
+  font-size: 11.5px; font-weight: 600; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+  flex: 0 0 auto;
+}
+.tab:hover { background: rgba(255 255 255 / .06); color: var(--text); }
+.tab.active { background: rgba(124 140 255 / .18); color: var(--accent); }
+.tab .x {
+  display: none; width: 14px; height: 14px; border-radius: 4px;
+  font-size: 11px; line-height: 14px; text-align: center;
+}
+.tab.active:hover .x { display: block; }
+.tab .x:hover { background: rgba(255 255 255 / .12); }
+.tab.confirm { background: var(--danger); color: #fff; }
+.tab.confirm .x { display: block; }
+#page-add {
+  width: 22px; height: 22px; border-radius: 6px;
+  color: var(--muted); font-size: 16px; line-height: 1;
+  display: grid; place-items: center; flex: 0 0 auto;
+}
+#page-add:hover { background: rgba(255 255 255 / .06); color: var(--text); }
+
+.saved {
+  margin-left: auto; font-size: 10px; color: var(--muted);
+  opacity: 0; transition: opacity .3s; pointer-events: none;
+}
+.saved.show { opacity: .8; }
+
+/* Sağ alt köşeden yeniden boyutlandırma */
+#grip {
+  position: absolute; right: 0; bottom: 0;
+  width: 26px; height: 26px;
+  cursor: nwse-resize;
+  background:
+    linear-gradient(135deg, transparent 55%, rgba(255 255 255 / .18) 55%, rgba(255 255 255 / .18) 62%, transparent 62%, transparent 72%, rgba(255 255 255 / .18) 72%, rgba(255 255 255 / .18) 79%, transparent 79%);
+  border-bottom-right-radius: var(--radius);
+  z-index: 60;
+}
+#grip:hover { filter: brightness(1.6); }
