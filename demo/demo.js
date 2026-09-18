@@ -126,8 +126,14 @@
     fileIcon.classList.remove('show', 'sel'); closeViewer();
     applyTheme(q.get('theme') || 'modern');
     window.demoShim.fold();
+    const browser = document.getElementById('browser');
+    browser.classList.remove('show', 'min');
     cx = innerWidth * .55; cy = innerHeight * .55; place();
-    await sleep(1200);
+    await sleep(900);
+    // tarayıcı açık, kullanıcı işinin başında
+    browser.classList.add('show');
+    await moveTo(innerWidth * .5, innerHeight * .42, 900);
+    await sleep(1300);
 
     // 1) köşeden çek
     await pullFromCorner([560, 520]);
@@ -178,9 +184,12 @@
 
     // 6) PNG dışa aktar -> masaüstünde dosya belirir -> çift tıkla aç -> kapat
     await clickEl(document.getElementById('export'));
-    await sleep(900);
+    await sleep(1400);
+    // tarayıcıyı küçült, dosya masaüstünde
+    browser.classList.add('min');
+    await sleep(700);
     fileIcon.classList.add('show');
-    await sleep(1300);
+    await sleep(1100);
     await moveTo(...Object.values(center(fileIcon)), 700);
     fileIcon.classList.add('sel');
     press(); ripple(); await sleep(80); release(); await sleep(110); press(); ripple(); await sleep(80); release();
@@ -205,13 +214,24 @@
     await clickEl(document.getElementById('brand'));
     await sleep(500);
     await clickEl(langPop.querySelector('[data-theme="light"]'), 500);
-    await moveTo(innerWidth * .45, innerHeight * .7, 900);
-    await sleep(2600);
+    await sleep(1200);
 
-    // 10) kapanış
+    // 10) boyut: sağ alt tutamaçtan istediğin gibi çek
+    const g = center(grip);
+    await moveTo(g.x, g.y, 700);
+    press(); mev('mousedown', grip, g.x, g.y); await sleep(250);
+    await moveTo(900, 400, 1000, (x, y) => mev('mousemove', window, x, y));
+    await sleep(500);
+    await moveTo(440, 720, 1100, (x, y) => mev('mousemove', window, x, y));
+    await sleep(300);
+    mev('mouseup', window, cx, cy); release();
+    await moveTo(innerWidth * .45, innerHeight * .75, 900);
+    await sleep(1600);
+
+    // 11) kararma + kapanış
     cur.classList.add('hide');
     endCard.classList.add('show');
-    await sleep(4200);
+    await sleep(6500);
     if (q.get('loop') === '1') { endCard.classList.remove('show'); await sleep(600); run(); }
   }
 

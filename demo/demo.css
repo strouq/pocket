@@ -59,6 +59,36 @@ body:not(.show-cursor), body:not(.show-cursor) * { cursor: none !important; }
 #taskbar span.start { background: linear-gradient(135deg, #ffffff, #b9bcc4); }
 #taskbar .clock { position: absolute; right: 16px; font: 12px var(--demo-font); color: #cfd2d8; background: none; width: auto; height: auto; }
 
+/* Sahte tarayıcı */
+#browser {
+  position: absolute; left: 14px; right: 14px; top: 14px; bottom: 58px;
+  background: #1c1d22; border: 1px solid rgba(255 255 255 / .1); border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0 0 0 / .55);
+  overflow: hidden; font-family: var(--demo-font); color: #d7d9de;
+  opacity: 0; transform: scale(.96) translateY(10px);
+  transition: opacity .5s, transform .5s cubic-bezier(.2,.8,.2,1);
+  transform-origin: 50% 100%;
+}
+#browser.show { opacity: 1; transform: none; }
+#browser.min { opacity: 0; transform: scale(.08) translateY(600px); transition: opacity .45s, transform .5s cubic-bezier(.5,0,.8,.4); }
+#browser .tabs { height: 38px; display: flex; align-items: flex-end; gap: 4px; padding: 6px 10px 0 90px; background: #131418; }
+#browser .tab { height: 30px; padding: 0 14px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12px; color: #9a9ea8; }
+#browser .tab i { width: 12px; height: 12px; border-radius: 3px; background: rgba(255 255 255 / .2); }
+#browser .tab.active { background: #1c1d22; color: #e6e8ee; }
+#browser .addr { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 14px; border-bottom: 1px solid rgba(255 255 255 / .07); }
+#browser .addr .nav { color: #7d818c; letter-spacing: .3em; font-size: 14px; }
+#browser .addr .url { flex: 1; height: 26px; border-radius: 13px; background: #101115; display: flex; align-items: center; padding: 0 14px; font-size: 12px; color: #a3a7b0; }
+#browser .page { display: flex; height: calc(100% - 78px); }
+#browser aside { width: 200px; padding: 20px 14px; border-right: 1px solid rgba(255 255 255 / .07); }
+#browser aside .logo { width: 34px; height: 34px; border-radius: 9px; background: #fff; margin-bottom: 22px; }
+#browser .nav-item { padding: 8px 10px; border-radius: 7px; font-size: 13px; color: #a3a7b0; display: flex; justify-content: space-between; }
+#browser .nav-item.active { background: rgba(255 255 255 / .08); color: #fff; }
+#browser .nav-item b { font-size: 11px; background: #fff; color: #111; border-radius: 10px; padding: 1px 7px; }
+#browser main { flex: 1; padding: 10px 0; }
+#browser .row { display: grid; grid-template-columns: 190px 1fr 90px; gap: 14px; padding: 13px 22px; border-bottom: 1px solid rgba(255 255 255 / .05); font-size: 13px; color: #a3a7b0; }
+#browser .row.unread { color: #eef0f4; font-weight: 600; }
+#browser .row .time { text-align: right; font-weight: 400; color: #7d818c; }
+
 /* Uygulama "penceresi": transform sayesinde içindeki position:fixed öğeler buna göre konumlanır */
 #win { position: absolute; top: 0; left: 0; width: 10px; height: 10px; overflow: hidden; transform: translateZ(0); }
 #win .pip { background: #cfd6ff; }
@@ -128,7 +158,7 @@ body:not(.show-cursor), body:not(.show-cursor) * { cursor: none !important; }
 /* Kapanış: ikon ortaya gelir, sola kayar, yanında Pocket yazısı */
 #end {
   position: fixed; inset: 0; display: grid; place-items: center;
-  background: #0c0d10; opacity: 0; pointer-events: none; transition: opacity .6s; z-index: 950;
+  background: #0c0d10; opacity: 0; pointer-events: none; transition: opacity 1.6s ease-in; z-index: 950;
 }
 #end.show { opacity: 1; }
 #end .logo { display: flex; align-items: center; gap: 0; }
@@ -137,13 +167,13 @@ body:not(.show-cursor), body:not(.show-cursor) * { cursor: none !important; }
   box-shadow: 0 20px 60px rgba(0 0 0 / .6);
   opacity: 0; transform: scale(.6);
 }
-#end.show .logo img { animation: logoIn .7s cubic-bezier(.2,.8,.2,1) .2s forwards; }
+#end.show .logo img { animation: logoIn .7s cubic-bezier(.2,.8,.2,1) 1.5s forwards; }
 #end .logo span {
   font: 600 64px var(--demo-font); letter-spacing: -.02em; color: #fff;
   max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
   margin-left: 0;
 }
-#end.show .logo span { animation: wordIn .8s cubic-bezier(.2,.8,.2,1) 1.3s forwards; }
+#end.show .logo span { animation: wordIn .8s cubic-bezier(.2,.8,.2,1) 2.6s forwards; }
 @keyframes logoIn { to { opacity: 1; transform: scale(1); } }
 @keyframes wordIn { to { max-width: 400px; opacity: 1; margin-left: 28px; } }
 #cursor.hide { opacity: 0; }

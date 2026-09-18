@@ -26,6 +26,23 @@ const html = `<!doctype html>
     <div id="taskbar"><span class="start"></span><span></span><span></span><span></span><span class="clock">14:32</span></div>
   </div>
 
+  <!-- sahte tarayıcı -->
+  <div id="browser">
+    <div class="tabs"><span class="tab active"><i></i>Inbox — Mail</span><span class="tab"><i></i>Q3 Report</span><span class="tab"><i></i>Calendar</span></div>
+    <div class="addr"><span class="nav">‹ › ↻</span><span class="url">mail.example.com/inbox</span></div>
+    <div class="page">
+      <aside><div class="logo"></div><div class="nav-item active">Inbox <b>12</b></div><div class="nav-item">Starred</div><div class="nav-item">Sent</div><div class="nav-item">Drafts</div><div class="nav-item">Archive</div></aside>
+      <main>
+        <div class="row unread"><span class="from">Client — Northwind</span><span class="subj">Re: Proposal v2 — can we close by Friday?</span><span class="time">09:41</span></div>
+        <div class="row"><span class="from">Finance</span><span class="subj">Q3 report draft attached</span><span class="time">09:12</span></div>
+        <div class="row"><span class="from">Design</span><span class="subj">Landing page — final review</span><span class="time">Yesterday</span></div>
+        <div class="row"><span class="from">HR</span><span class="subj">Team sync moved to 15:00</span><span class="time">Yesterday</span></div>
+        <div class="row"><span class="from">Product</span><span class="subj">Roadmap notes</span><span class="time">Mon</span></div>
+        <div class="row"><span class="from">Ops</span><span class="subj">Weekly metrics</span><span class="time">Mon</span></div>
+      </main>
+    </div>
+  </div>
+
   <div id="win">
 ${body.trim()}
   </div>
